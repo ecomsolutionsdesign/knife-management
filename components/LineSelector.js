@@ -1,5 +1,4 @@
-// components/LineSelector.js (NEW - Reusable)
-// ============================================
+// components/LineSelector.js
 "use client";
 import React from 'react';
 

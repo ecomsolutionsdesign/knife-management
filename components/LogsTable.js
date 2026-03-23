@@ -1,6 +1,4 @@
-// ============================================
-// components/LogsTable.js (NEW - Reusable)
-// ============================================
+// components/LogsTable.js
 "use client";
 import React from 'react';
 

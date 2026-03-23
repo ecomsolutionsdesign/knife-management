@@ -1,5 +1,4 @@
 // app/api/knives/plans/[planNo]/route.js
-// ============================================
 import dbConnect from '@/lib/mongodb';
 import { KnifePlan } from '@/models/Knife';
 import { NextResponse } from 'next/server';

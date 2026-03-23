@@ -1,4 +1,4 @@
-// app/knives/page.js (Updated - moved from root)
+// app/knives/page.js
 
 "use client";
 import KnifeForm from '@/components/KnifeForm';

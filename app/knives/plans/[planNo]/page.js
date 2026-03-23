@@ -1,5 +1,4 @@
-// app/knives/plans/[planNo]/page.js (Updated)
-// ============================================
+// app/knives/plans/[planNo]/page.js
 "use client";
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';

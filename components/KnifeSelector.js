@@ -1,5 +1,4 @@
-// components/KnifeSelector.js (NEW - Reusable)
-// ============================================
+// components/KnifeSelector.js
 "use client";
 import React from 'react';
 

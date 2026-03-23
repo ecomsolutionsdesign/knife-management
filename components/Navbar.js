@@ -23,7 +23,7 @@ const Navbar = () => {
 
                 {/* Right side */}
                 <div className="flex items-center gap-3">
-                    <Link href="/" className='text-slate-300 hover:text-white text-sm transition-colors'>
+                    <Link href="/knives" className='text-slate-300 hover:text-white text-sm transition-colors'>
                         Home
                     </Link>
 

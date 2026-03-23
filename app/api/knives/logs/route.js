@@ -1,6 +1,4 @@
-// ============================================
-// app/api/knives/logs/route.js (NEW - Unified)
-// ============================================
+// app/api/knives/logs/route.js
 import dbConnect from '@/lib/mongodb';
 import { KnifeChangeLog } from '@/models/Knife';
 import { NextResponse } from 'next/server';

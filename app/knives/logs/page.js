@@ -1,5 +1,4 @@
-// app/knives/logs/page.js (NEW - Unified Logs)
-// ============================================
+// app/knives/logs/page.js
 "use client";
 import React, { useState, useEffect, Suspense } from 'react';
 import axios from 'axios';
