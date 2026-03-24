@@ -1,7 +1,9 @@
 // app/api/knives/[knifeNo]/route.js
 import dbConnect from '@/lib/mongodb';
+import { getServerSession } from 'next-auth';
 import { Knife, KnifeChangeLog } from '@/models/Knife';
 import { NextResponse } from 'next/server';
+import { authOptions } from '../../auth/[...nextauth]/route';
 
 export async function GET(req, { params }) {
     try {
@@ -20,6 +22,9 @@ export async function GET(req, { params }) {
 }
 
 export async function PATCH(req, { params }) {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     try {
         await dbConnect();
         const { knifeNo } = await params;

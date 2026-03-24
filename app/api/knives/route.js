@@ -1,11 +1,17 @@
 // app/api/knives/route.js
 
 import dbConnect from '@/lib/mongodb';
+import { getServerSession } from 'next-auth';
 import { Knife, KnifePlan } from '@/models/Knife';
 import { NextResponse } from 'next/server';
+import { authOptions } from '../auth/[...nextauth]/route';
 
 export async function GET(req) {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     await dbConnect();
+
     try {
         const { searchParams } = new URL(req.url);
         const currentLine = searchParams.get('currentLine');
@@ -22,6 +28,9 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+    const session = await getServerSession(authOptions);
+    if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+
     await dbConnect();
     try {
         const { currentLine, planNo, doffLength, noOfDoff, mcSpeed, selectedKnives, changedKnives = [] } = await req.json();
