@@ -17,7 +17,7 @@ export async function GET(req) {
         const currentLine = searchParams.get('currentLine');
 
         if (!currentLine) {
-            return NextResponse.json({ message: "currentLine is required" }, { status: 400 });
+            return NextResponse.json({ message: 'currentLine is required' }, { status: 400 });
         }
 
         const knives = await Knife.find({ currentLine, isActive: true });
@@ -33,18 +33,28 @@ export async function POST(req) {
 
     await dbConnect();
     try {
-        const { currentLine, planNo, doffLength, noOfDoff, mcSpeed, selectedKnives, changedKnives = [] } = await req.json();
+        const {
+            currentLine,
+            planNo,
+            planDate,       // ISO date string chosen in UI
+            doffLength,
+            noOfDoff,
+            mcSpeed,
+            selectedKnives,
+            changedKnives = [],
+        } = await req.json();
 
-        // ✅ Bug 1 fix: check if this planNo already has entries for this line
-        const existingPlanCount = await KnifePlan.countDocuments({ currentLine, planNo });
-        if (existingPlanCount > 0) {
+        // ── Guard: duplicate planNo for this line ──────────────────────────────
+        const existingPlan = await KnifePlan.findOne({ currentLine, planNo });
+        if (existingPlan) {
             return NextResponse.json(
                 { message: `Plan ${planNo} already exists for ${currentLine}. Use a different plan number.` },
                 { status: 409 }
             );
         }
 
-        const savedData = [];
+        // ── Handle knife-change swaps ──────────────────────────────────────────
+        const allKnives = [...selectedKnives];
 
         for (const { oldKnifeNo, newKnifeNo, changeReason } of changedKnives) {
             if (oldKnifeNo) {
@@ -55,16 +65,27 @@ export async function POST(req) {
             }
             await Knife.findOneAndUpdate(
                 { knifeNo: newKnifeNo },
-                { runinmins: 0, runningkm: 0, isActive: true, currentPlanNo: planNo, lastChanged: new Date(), currentLine },
+                {
+                    runinmins: 0,
+                    runningkm: 0,
+                    isActive: true,
+                    currentPlanNo: planNo,
+                    lastChanged: new Date(),
+                    currentLine,
+                },
                 { upsert: true }
             );
-            if (!selectedKnives.includes(newKnifeNo)) selectedKnives.push(newKnifeNo);
+            if (!allKnives.includes(newKnifeNo)) allKnives.push(newKnifeNo);
         }
 
+        // ── Compute increments ─────────────────────────────────────────────────
         const newRuninmins = Math.round((doffLength * noOfDoff) / mcSpeed);
         const newRunningkm = Math.round((doffLength * noOfDoff) / 1000);
 
-        for (const knifeNo of selectedKnives) {
+        // ── Build the knives array for the single KnifePlan document ──────────
+        const knivesArray = [];
+
+        for (const knifeNo of allKnives) {
             let knife = await Knife.findOne({ knifeNo });
             if (!knife) {
                 knife = new Knife({ currentLine, knifeNo, runinmins: 0, runningkm: 0 });
@@ -73,26 +94,36 @@ export async function POST(req) {
             knife.runinmins += newRuninmins;
             knife.runningkm += newRunningkm;
             knife.currentPlanNo = planNo;
-            knife.lastUsedDate = new Date(); // ✅ Now works because field is in schema
+            knife.lastUsedDate = new Date();
             await knife.save();
 
-            const planEntry = await KnifePlan.create({
-                currentLine, planNo, knifeNo, doffLength, noOfDoff, mcSpeed,
+            knivesArray.push({
+                knifeNo,
                 runinmins: newRuninmins,
                 runningkm: newRunningkm,
                 cumulativeRuninmins: knife.runinmins,
-                cumulativeRunningkm: knife.runningkm
+                cumulativeRunningkm: knife.runningkm,
             });
-
-            savedData.push({ knife, planUsage: planEntry });
         }
 
-        return NextResponse.json(savedData);
+        // ── Create ONE document for the whole plan ────────────────────────────
+        const planDoc = await KnifePlan.create({
+            currentLine,
+            planNo,
+            planDate: planDate ? new Date(planDate) : new Date(),
+            doffLength,
+            noOfDoff,
+            mcSpeed,
+            knives: knivesArray,
+            createdBy: session.user.id,
+            createdByName: session.user.name,
+        });
+
+        return NextResponse.json(planDoc);
     } catch (error) {
-        // ✅ Handle MongoDB duplicate key error gracefully
         if (error.code === 11000) {
             return NextResponse.json(
-                { message: 'Duplicate entry: this plan+knife combination already exists.' },
+                { message: 'Duplicate entry: this plan already exists for this line.' },
                 { status: 409 }
             );
         }
