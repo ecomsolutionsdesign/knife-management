@@ -4,6 +4,7 @@ import React from 'react';
 
 function LineSelector({ currentLine, onLineChange }) {
     const lines = [
+        { id: 'line1', label: 'Line 1' },
         { id: 'line2', label: 'Line 2' },
         { id: 'line3', label: 'Line 3' }
     ];

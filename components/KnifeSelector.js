@@ -3,6 +3,7 @@
 import React from 'react';
 
 const KNIFE_CONFIGS = {
+    line1: { count: 22, prefix: 'TK_' },
     line2: { count: 30, prefix: 'TK' },
     line3: { count: 48, prefix: 'TK-' }
 };
@@ -14,8 +15,8 @@ function KnifeSelector({ currentLine, selectedKnives, onToggle }) {
     const knives = Array.from({ length: config.count }, (_, i) => `${config.prefix}${i + 1}`);
 
     // Use explicit class names for Tailwind to detect
-    const gridClass = currentLine === 'line2' ? 'grid-cols-6' : 'grid-cols-8';
-    const widthClass = currentLine === 'line2' ? 'w-2/3' : 'w-full';
+    const gridClass = currentLine === 'line1' ? 'grid-cols-6' : 'grid-cols-8';
+    const widthClass = currentLine === 'line1' ? 'w-2/3' : 'w-full';
 
     return (
         <div className={`grid ${gridClass} gap-2 ${widthClass}`}>

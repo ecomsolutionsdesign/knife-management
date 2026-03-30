@@ -2,6 +2,6 @@
 import { create } from 'zustand';
 
 export const useLineStore = create((set) => ({
-    currentLine: 'line2',
+    currentLine: 'line1',
     setCurrentLine: (line) => set({ currentLine: line }),
 }));

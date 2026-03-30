@@ -59,6 +59,13 @@ const Navbar = () => {
                                     </div>
 
                                     {session.user.role === 'admin' && (
+                                        <Link href="/admin/thresholds" onClick={() => setMenuOpen(false)}
+                                            className="block px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                            ⚙️ Knife Thresholds
+                                        </Link>
+                                    )}
+                                    
+                                    {session.user.role === 'admin' && (
                                         <Link
                                             href="/admin/users"
                                             onClick={() => setMenuOpen(false)}
