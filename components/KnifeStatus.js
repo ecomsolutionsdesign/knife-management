@@ -15,10 +15,10 @@ const generateKnifeNos = (line) => {
 };
 
 // ── Health thresholds (tweak to match your operational limits) ────────────────
-const WARN_MINS  = 1200; // 20 h
-const CRIT_MINS  = 2400; // 40 h
-const WARN_KM    = 100;
-const CRIT_KM    = 1200;
+const WARN_MINS  = 4500; // 75 h
+const CRIT_MINS  = 5000; // 83 h
+const WARN_KM    = 4500;
+const CRIT_KM    = 5000;
 
 function statusTier(runinmins, runningkm) {
     if (runinmins >= CRIT_MINS || runningkm >= CRIT_KM) return 'critical';
